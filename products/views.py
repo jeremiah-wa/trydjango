@@ -1,18 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.forms import forms
 from .models import Product
 from .form import ProductForm
 
 # Create your views here
-
-
-# TODO
-"""
-    product_create_view,
-    product_detail_view,
-    product_list_view
-"""
 
 
 def product_create_view(request):
@@ -33,6 +25,28 @@ def product_detail_view(request, id):
         'object': obj
     }
     return render(request, "products/detail.html", context)
+
+
+def product_delete_view(request, id):
+    obj = get_object_or_404(Product, id=id)
+    if request.method == "POST":
+        obj.delete()
+        return redirect("../../")
+    context = {
+        'object': obj
+    }
+    return render(request, "products/delete.html", context)
+
+
+def product_update_view(request, id=id):
+    obj = get_object_or_404(Product, id=id)
+    form = ProductForm(request.POST or None, instance=obj)
+    if form.is_valid():
+        form.save()
+    context = {
+        'form': form
+    }
+    return render(request, "products/create.html", context)
 
 
 def product_list_view(request):
